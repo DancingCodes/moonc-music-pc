@@ -10,9 +10,10 @@
             <div class="main">
                 <div class="mainHeader">
                     <div class="serachBox">
-                        <el-input v-model="serachMusicName" placeholder="若是月亮还没来" clearable>
+                        <el-input v-model="searchParams.name" placeholder="若是月亮还没来" clearable
+                            @keydown.enter="serachMusicForName">
                             <template #prepend>
-                                <i-ep-search />
+                                <i-ep-search @click="serachMusicForName" />
                             </template>
                         </el-input>
                     </div>
@@ -27,34 +28,28 @@
                         <div class="album">专辑</div>
                         <div class="duration">时长</div>
                     </div>
-                    <div class="musicListBodyer" v-infinite-scroll="loadMoreMusic">
-                        <div class="musicItem Music">
+
+                    <div v-if="musicList.length" class="musicListBodyer" v-infinite-scroll="loadMusicList"
+                        :infinite-scroll-immediate="false" infinite-scroll-distance="1">
+                        <div class="musicItem Music" v-for="item in musicList" :key="item.id">
                             <div class="index">01</div>
                             <div class="title">
-                                <img src="https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg"
-                                    class="musicImage">
+                                <img :src="item.album.picUrl" class="musicImage">
                                 <div class="musicInfo">
-                                    <div class="musicName">轻轻的告诉你</div>
-                                    <div class="musicAuthor">杨珏莹</div>
+                                    <div class="musicName">{{ item.name }}</div>
+                                    <div class="musicAuthor">{{ item.author.map(item => item.name).join('/') }}</div>
                                 </div>
                             </div>
-                            <div class="album">龙凤金歌榜</div>
-                            <div class="duration">04:40</div>
-                        </div>
-                        <div class="musicItem Music">
-                            <div class="index">02</div>
-                            <div class="title">
-                                <img src="https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg"
-                                    class="musicImage">
-                                <div class="musicInfo">
-                                    <div class="musicName">轻轻的告诉你</div>
-                                    <div class="musicAuthor">杨珏莹</div>
-                                </div>
-                            </div>
-                            <div class="album">伤心的翅膀</div>
-                            <div class="duration">03:55</div>
+                            <div class="album">{{ item.album.name }}</div>
+                            <div class="duration">{{ (item.duration / 1000 / 60).toFixed(2).replace('.', ':') }}</div>
                         </div>
                     </div>
+
+
+                    <!-- 空状态 -->
+                    <el-empty class="empty" v-else description="空空如也" />
+
+
                 </div>
             </div>
         </div>
@@ -116,12 +111,45 @@
 </template>
 
 <script setup lang="ts">
+import { ISearchMusicParams, searchMusic } from '@/api/music';
 import { IMusic } from '@/types/music';
 
-const serachMusicName = ref<string>('')
 
-function loadMoreMusic() {
-    console.log(1);
+const searchParams = reactive<ISearchMusicParams>({
+    name: '',
+    pageNo: 1,
+    pageSize: 10
+})
+const musicList = ref<IMusic[]>([])
+const musicTotal = ref<number>(0)
+function getMusicList() {
+    return searchMusic({
+        ...searchParams,
+        name: searchParams.name?.trim(),
+    })
+}
+
+
+function serachMusicForName() {
+    searchParams.pageNo = 1
+    musicList.value = []
+    musicTotal.value = 0
+    getMusicList().then(res => {
+        musicList.value = res.data.list
+        musicTotal.value = res.data.total
+    })
+}
+serachMusicForName()
+
+function loadMusicList() {
+    if (musicList.value.length === musicTotal.value) {
+        return
+    }
+    searchParams.pageNo && searchParams.pageNo++
+    getMusicList().then(res => {
+        musicList.value = [...musicList.value, ...res.data.list]
+        musicTotal.value = res.data.total
+    })
 }
 
 const musicAudio = ref<HTMLAudioElement>()
@@ -333,6 +361,21 @@ function playMusic() {
 
                     .musicItem:hover {
                         background-color: rgba(#aca9a7, 0.3);
+                    }
+                }
+
+                :deep(.empty) {
+                    flex: 1;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    .el-empty__image {
+                        width: 200px;
+                    }
+
+                    .el-empty__description p {
+                        font-size: 40px;
                     }
                 }
 

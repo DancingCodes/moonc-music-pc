@@ -1,5 +1,16 @@
 export interface IMusic {
-    id: number,
+    id: string,
     name: string,
-    author: Array<string>
+    url: string,
+    author: Array<{
+        id: number,
+        name: string
+    }>,
+    duration: number,
+    album: {
+        id: number,
+        name: string,
+        picUrl: string
+    },
+    lyric: string,
 }

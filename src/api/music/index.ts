@@ -4,7 +4,7 @@ import { IMusic } from "@/types/music";
 
 
 export interface ISearchMusicParams {
-    name: string;
+    name?: string;
     pageNo?: number;
     pageSize?: number;
 }
@@ -15,10 +15,4 @@ interface ISearchMusicResponse {
 }
 
 
-export const searchMusic = (params: ISearchMusicParams): Promise<IApiResponse<ISearchMusicResponse>> => request.get('/music/searchMusic', { params })
-
-
-interface ISaveMusicParams {
-    id: number;
-}
-export const saveMusic = (params: ISaveMusicParams): Promise<IApiResponse<boolean>> => request.get('/music/saveMusic', { params })
+export const searchMusic = (params?: ISearchMusicParams): Promise<IApiResponse<ISearchMusicResponse>> => request.get('/music/searchMusic', { params })
