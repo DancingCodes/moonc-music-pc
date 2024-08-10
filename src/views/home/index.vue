@@ -22,16 +22,16 @@
                     </div>
                 </div>
                 <div class="mainBodyer">
-                    <div class="musicListHeader Music">
+                    <div v-if="musicList.length" class="musicListHeader Music">
                         <div class="index">#</div>
                         <div class="title">标题</div>
                         <div class="album">专辑</div>
                         <div class="duration">时长</div>
                     </div>
-
                     <div v-if="musicList.length" class="musicListBodyer" v-infinite-scroll="loadMusicList"
                         :infinite-scroll-immediate="false" infinite-scroll-distance="1">
-                        <div class="musicItem Music" v-for="item in musicList" :key="item.id">
+                        <div class="musicItem Music" v-for="item in musicList" :key="item.id"
+                            @click="selectMusic(item)">
                             <div class="index">01</div>
                             <div class="title">
                                 <img :src="item.album.picUrl" class="musicImage">
@@ -43,6 +43,9 @@
                             <div class="album">{{ item.album.name }}</div>
                             <div class="duration">{{ (item.duration / 1000 / 60).toFixed(2).replace('.', ':') }}</div>
                         </div>
+                        <div class="loadingBox">
+                            {{ musicList.length === musicTotal ? '没有更多了' : '再来一些' }}
+                        </div>
                     </div>
                     <!-- 空状态 -->
                     <el-empty class="empty" v-else description="空空如也" />
@@ -50,16 +53,16 @@
             </div>
         </div>
 
-        <div class="footer">
+        <div class="footer" v-if="currentPlayMusic">
             <div class="musicSide Side">
-                <img src="https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg" class="musicImage">
+                <img :src="currentPlayMusic.album.picUrl" class="musicImage">
                 <div class="musicInfo">
-                    <div class="musicName">轻轻的告诉你</div>
-                    <div class="musicAuthor">杨珏莹</div>
+                    <div class="musicName">{{ currentPlayMusic.name }}</div>
+                    <div class="musicAuthor">{{ currentPlayMusic.author.map(item => item.name).join('/') }}</div>
                 </div>
             </div>
             <div class="musicControl">
-                <div class="controlBtnBox" @click="playMusic">
+                <div class="controlBtnBox">
                     <div class="preMusic MusicBtn">
                         <svg viewBox="0 0 1024 1024" width="1em" height="1em">
                             <path fill="currentColor"
@@ -68,7 +71,7 @@
                         </svg>
                     </div>
 
-                    <div class="playMusic MusicBtn">
+                    <div class="playMusic MusicBtn" @click="() => playState ? pauseMusic() : playMusic()">
                         <svg v-show="playState" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="1em"
                             height="1em">
                             <path fill="currentColor"
@@ -94,8 +97,6 @@
 
                 </div>
                 <div class="audioBox">
-                    <audio style="width: 0;height: 0;" ref="musicAudio"
-                        src="http://downsc.chinaz.net/Files/DownLoad/sound1/201906/11582.mp3" controls></audio>
                     <div class="audioSchedule">
                         <div ref="progressBar" class="progressBar"></div>
                     </div>
@@ -103,13 +104,13 @@
             </div>
             <div class="Side"></div>
         </div>
+        <audio style="width: 0;height: 0;" ref="musicAudio" :src="currentPlayMusic?.url" controls></audio>
     </div>
 </template>
 
 <script setup lang="ts">
 import { ISearchMusicParams, searchMusic } from '@/api/music';
 import { IMusic } from '@/types/music';
-
 
 const searchParams = reactive<ISearchMusicParams>({
     name: '',
@@ -149,17 +150,47 @@ function loadMusicList() {
 }
 
 const musicAudio = ref<HTMLAudioElement>()
+const updateProgressBar = () => {
+    const percentage = (musicAudio.value!.currentTime / musicAudio.value!.duration) * 100;
+    progressBar.value!.style.left = `-${100 - percentage}%`
+};
+onMounted(() => {
+    musicAudio.value!.addEventListener('timeupdate', updateProgressBar)
+})
+onUnmounted(() => {
+    musicAudio.value!.removeEventListener('timeupdate', updateProgressBar);
+})
+
 const progressBar = ref<HTMLDivElement>()
 const playState = ref<boolean>(false)
-// const currentPlayMusic = ref<IMusic>()
+const currentPlayMusic = ref<IMusic>()
+const playMusicCurrentTime = ref<number>(0)
+
+
+function selectMusic(music: IMusic) {
+    currentPlayMusic.value = music
+    playMusicCurrentTime.value = 0
+    playMusic()
+}
 
 function playMusic() {
-    musicAudio.value!.play()
-    musicAudio.value!.addEventListener('timeupdate', () => {
-        const percentage = (musicAudio.value!.currentTime / musicAudio.value!.duration) * 100;
-        progressBar.value!.style.width = `${percentage}%`
+    if (!playState.value) {
+        playState.value = true
+    }
+    nextTick(() => {
+        musicAudio.value!.currentTime = playMusicCurrentTime.value;
+        musicAudio.value!.play()
     })
 }
+
+function pauseMusic() {
+    if (playState.value) {
+        playState.value = false
+    }
+    musicAudio.value!.pause()
+    playMusicCurrentTime.value = musicAudio.value!.currentTime
+}
+
 </script>
 <style scoped lang="scss">
 .home {
@@ -170,6 +201,8 @@ function playMusic() {
     .bodyer {
         flex: 1;
         display: flex;
+        overflow: hidden;
+
 
         .sidebar {
             background: linear-gradient(to bottom, #756243, #1a1a21);
@@ -212,6 +245,7 @@ function playMusic() {
             flex-direction: column;
             padding: 20px 60px;
             box-sizing: border-box;
+            overflow: hidden;
 
             .mainHeader {
                 display: flex;
@@ -286,6 +320,7 @@ function playMusic() {
                 flex: 1;
                 display: flex;
                 flex-direction: column;
+                overflow: hidden;
 
                 .Music {
                     display: flex;
@@ -316,6 +351,7 @@ function playMusic() {
                     flex: 1;
                     padding: 6px 0;
                     box-sizing: border-box;
+                    overflow-y: scroll;
 
                     .musicItem {
                         padding: 14px 20px;
@@ -358,6 +394,32 @@ function playMusic() {
                     .musicItem:hover {
                         background-color: rgba(#aca9a7, 0.3);
                     }
+
+                    .loadingBox {
+                        font-size: 24px;
+                        text-align: right;
+                        background: linear-gradient(to right, #aca9a7, #000);
+                        background-size: 200% 100%;
+                        background-position-x: 0;
+                        -webkit-background-clip: text;
+                        background-clip: text;
+                        color: transparent;
+                        animation: animate-gradient 0.6s linear infinite alternate;
+                    }
+
+                    @keyframes animate-gradient {
+                        0% {
+                            background-position-x: 0;
+                        }
+
+                        100% {
+                            background-position-x: 100%;
+                        }
+                    }
+                }
+
+                .musicListBodyer::-webkit-scrollbar {
+                    display: none;
                 }
 
                 :deep(.empty) {
@@ -383,10 +445,9 @@ function playMusic() {
         background-color: #2d2d38;
         border-top: 4px solid #42424c;
         box-sizing: border-box;
-        padding: 32px 55px;
+        padding: 26px 55px;
         display: flex;
         align-items: center;
-
 
         .Side {
             flex: 1;
@@ -463,13 +524,15 @@ function playMusic() {
                     background-color: #42424c;
                     border-radius: 10px;
                     position: relative;
+                    overflow: hidden;
 
                     .progressBar {
                         position: absolute;
                         left: 0;
                         top: 0;
-                        width: 0%;
+                        width: 100%;
                         height: 100%;
+                        left: -100%;
                         background-color: #c74150;
                         border-radius: 10px;
                     }
@@ -477,6 +540,8 @@ function playMusic() {
             }
         }
     }
+
+
 
 }
 </style>
