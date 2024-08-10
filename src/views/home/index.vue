@@ -44,12 +44,8 @@
                             <div class="duration">{{ (item.duration / 1000 / 60).toFixed(2).replace('.', ':') }}</div>
                         </div>
                     </div>
-
-
                     <!-- 空状态 -->
                     <el-empty class="empty" v-else description="空空如也" />
-
-
                 </div>
             </div>
         </div>
@@ -155,7 +151,7 @@ function loadMusicList() {
 const musicAudio = ref<HTMLAudioElement>()
 const progressBar = ref<HTMLDivElement>()
 const playState = ref<boolean>(false)
-const currentPlayMusic = ref<IMusic>()
+// const currentPlayMusic = ref<IMusic>()
 
 function playMusic() {
     musicAudio.value!.play()
