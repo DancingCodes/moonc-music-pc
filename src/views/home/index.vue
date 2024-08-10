@@ -112,13 +112,17 @@
 import { ISearchMusicParams, searchMusic } from '@/api/music';
 import { IMusic } from '@/types/music';
 
+// 搜索条件
 const searchParams = reactive<ISearchMusicParams>({
     name: '',
     pageNo: 1,
     pageSize: 10
 })
+// 音乐列表
 const musicList = ref<IMusic[]>([])
+// 音乐总条数
 const musicTotal = ref<number>(0)
+// 获取音乐
 function getMusicList() {
     return searchMusic({
         ...searchParams,
@@ -126,7 +130,7 @@ function getMusicList() {
     })
 }
 
-
+// 搜索音乐
 function serachMusicForName() {
     searchParams.pageNo = 1
     musicList.value = []
@@ -138,6 +142,7 @@ function serachMusicForName() {
 }
 serachMusicForName()
 
+// 加载更多音乐
 function loadMusicList() {
     if (musicList.value.length === musicTotal.value) {
         return
@@ -149,46 +154,56 @@ function loadMusicList() {
     })
 }
 
+// 播放器
 const musicAudio = ref<HTMLAudioElement>()
+// 进度条
+const progressBar = ref<HTMLDivElement>()
+// Audio播放时设置进度条
 const updateProgressBar = () => {
     const percentage = (musicAudio.value!.currentTime / musicAudio.value!.duration) * 100;
     progressBar.value!.style.left = `-${100 - percentage}%`
 };
+// 页面加载完成后对Audio绑定播放时事件
 onMounted(() => {
     musicAudio.value!.addEventListener('timeupdate', updateProgressBar)
 })
+// 页面卸载完成后对Audio解绑播放时事件
 onUnmounted(() => {
     musicAudio.value!.removeEventListener('timeupdate', updateProgressBar);
 })
 
-const progressBar = ref<HTMLDivElement>()
+// 播放状态
 const playState = ref<boolean>(false)
+// 当前播放音乐
 const currentPlayMusic = ref<IMusic>()
-const playMusicCurrentTime = ref<number>(0)
+// 音乐当前播放的时长
+const musicCurrentTime = ref<number>(0)
 
-
+// 选中音乐
 function selectMusic(music: IMusic) {
     currentPlayMusic.value = music
-    playMusicCurrentTime.value = 0
+    musicCurrentTime.value = 0
     playMusic()
 }
 
+// 播放音乐
 function playMusic() {
     if (!playState.value) {
         playState.value = true
     }
     nextTick(() => {
-        musicAudio.value!.currentTime = playMusicCurrentTime.value;
+        musicAudio.value!.currentTime = musicCurrentTime.value;
         musicAudio.value!.play()
     })
 }
 
+// 暂停音乐
 function pauseMusic() {
     if (playState.value) {
         playState.value = false
     }
     musicAudio.value!.pause()
-    playMusicCurrentTime.value = musicAudio.value!.currentTime
+    musicCurrentTime.value = musicAudio.value!.currentTime
 }
 
 </script>
