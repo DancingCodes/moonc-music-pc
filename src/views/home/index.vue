@@ -9,11 +9,11 @@
             </div>
             <div class="main">
                 <div class="mainHeader">
-                    <div class="serachBox">
+                    <div class="searchBox">
                         <el-input v-model="searchParams.name" placeholder="若是月亮还没来" clearable
-                            @keydown.enter="serachMusicForName">
+                            @keydown.enter="searchMusicByName">
                             <template #prepend>
-                                <i-ep-search @click="serachMusicForName" />
+                                <i-ep-search @click="searchMusicByName" />
                             </template>
                         </el-input>
                     </div>
@@ -92,7 +92,6 @@
                         </svg>
                     </div>
 
-
                 </div>
                 <div class="audioBox">
                     <div class="audioSchedule">
@@ -129,7 +128,7 @@ function getMusicList() {
 }
 
 // 搜索音乐
-function serachMusicForName() {
+function searchMusicByName() {
     searchParams.pageNo = 1
     musicList.value = []
     musicTotal.value = 0
@@ -138,7 +137,7 @@ function serachMusicForName() {
         musicTotal.value = res.data.total
     })
 }
-serachMusicForName()
+searchMusicByName()
 
 // 加载更多音乐
 function loadMusicList() {
@@ -160,6 +159,10 @@ const progressBar = ref<HTMLDivElement>()
 const updateProgressBar = () => {
     const percentage = (musicAudio.value!.currentTime / musicAudio.value!.duration) * 100;
     progressBar.value!.style.left = `-${100 - percentage}%`
+
+    if (percentage === 100) {
+        playNextMusic()
+    }
 };
 // 页面加载完成后对Audio绑定播放时事件
 onMounted(() => {
@@ -286,7 +289,7 @@ function playNextMusic() {
                 height: 50px;
                 margin-bottom: 30px;
 
-                :deep(.serachBox) {
+                :deep(.searchBox) {
                     display: flex;
                     align-items: center;
                     height: 100%;
@@ -441,15 +444,15 @@ function playNextMusic() {
                         -webkit-background-clip: text;
                         background-clip: text;
                         color: transparent;
-                        animation: animate-gradient 0.6s linear infinite alternate;
+                        animation: backgroundMoveX 0.6s linear infinite alternate;
                     }
 
-                    @keyframes animate-gradient {
-                        0% {
+                    @keyframes backgroundMoveX {
+                        from {
                             background-position-x: 0;
                         }
 
-                        100% {
+                        to {
                             background-position-x: 100%;
                         }
                     }
@@ -479,12 +482,13 @@ function playNextMusic() {
     }
 
     .footer {
+        padding: 26px 55px;
         background-color: #2d2d38;
         border-top: 4px solid #42424c;
         box-sizing: border-box;
-        padding: 26px 55px;
         display: flex;
         align-items: center;
+        animation: showByOpacity 0.7s ease 0s forwards;
 
         .Side {
             flex: 1;
@@ -576,6 +580,16 @@ function playNextMusic() {
                     }
                 }
             }
+        }
+    }
+
+    @keyframes showByOpacity {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
         }
     }
 

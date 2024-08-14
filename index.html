@@ -24,15 +24,15 @@
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      animation: animate-gradient 1s linear infinite alternate;
+      animation: backgroundMoveX 1s linear infinite alternate;
     }
 
-    @keyframes animate-gradient {
-      0% {
+    @keyframes backgroundMoveX {
+      from {
         background-position-x: 0;
       }
 
-      100% {
+      to {
         background-position-x: 100%;
       }
     }
