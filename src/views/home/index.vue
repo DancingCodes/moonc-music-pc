@@ -30,9 +30,9 @@
                     </div>
                     <div v-if="musicList.length" class="musicListBodyer" v-infinite-scroll="loadMusicList"
                         :infinite-scroll-immediate="false" infinite-scroll-distance="1">
-                        <div class="musicItem Music" v-for="item in musicList" :key="item.id"
+                        <div class="musicItem Music" v-for="(item, index) in musicList" :key="item.id"
                             @click="selectMusic(item)">
-                            <div class="index">01</div>
+                            <div class="index">{{ index + 1 }}</div>
                             <div class="title">
                                 <img :src="item.album.picUrl" class="musicImage">
                                 <div class="musicInfo">
@@ -52,7 +52,6 @@
                 </div>
             </div>
         </div>
-
         <div class="footer" v-if="currentPlayMusic">
             <div class="musicSide Side">
                 <img :src="currentPlayMusic.album.picUrl" class="musicImage">
@@ -328,6 +327,7 @@ function pauseMusic() {
 
                 .functionsBox {
                     color: #fff;
+                    font-size: 30px;
                 }
             }
 
