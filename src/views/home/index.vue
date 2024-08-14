@@ -554,6 +554,10 @@ function playNextMusic() {
                 .preMusic {
                     transform: rotate(-180deg);
                 }
+
+                .playMusic {
+                    font-size: 40px;
+                }
             }
 
             .audioBox {
