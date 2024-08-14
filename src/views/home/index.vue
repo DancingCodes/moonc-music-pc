@@ -217,7 +217,6 @@ function pauseMusic() {
         display: flex;
         overflow: hidden;
 
-
         .sidebar {
             background: linear-gradient(to bottom, #756243, #1a1a21);
             display: flex;
@@ -471,6 +470,7 @@ function pauseMusic() {
         .musicSide {
             display: flex;
             align-items: center;
+            cursor: pointer;
 
             .musicImage {
                 width: 60px;
@@ -555,8 +555,6 @@ function pauseMusic() {
             }
         }
     }
-
-
 
 }
 </style>
