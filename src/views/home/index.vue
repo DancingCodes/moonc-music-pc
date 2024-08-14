@@ -52,12 +52,12 @@
                 </div>
             </div>
         </div>
-        <div class="footer" v-if="currentPlayMusic">
+        <div class="footer" v-show="currentPlayMusic">
             <div class="musicSide Side">
-                <img :src="currentPlayMusic.album.picUrl" class="musicImage">
+                <img :src="currentPlayMusic?.album.picUrl" class="musicImage">
                 <div class="musicInfo">
-                    <div class="musicName">{{ currentPlayMusic.name }}</div>
-                    <div class="musicAuthor">{{ currentPlayMusic.author.map(item => item.name).join('/') }}</div>
+                    <div class="musicName">{{ currentPlayMusic?.name }}</div>
+                    <div class="musicAuthor">{{ currentPlayMusic?.author.map(item => item.name).join('/') }}</div>
                 </div>
             </div>
             <div class="musicControl">
@@ -94,14 +94,15 @@
 
                 </div>
                 <div class="audioBox">
+                    <audio style="width: 0;height: 0;" ref="musicAudio" :src="currentPlayMusic?.url" controls></audio>
                     <div class="audioSchedule">
                         <div ref="progressBar" class="progressBar"></div>
+                        <div class="scheduleEntity" @click="updataMusicPlayTime"></div>
                     </div>
                 </div>
             </div>
             <div class="Side"></div>
         </div>
-        <audio style="width: 0;height: 0;" ref="musicAudio" :src="currentPlayMusic?.url" controls></audio>
     </div>
 </template>
 
@@ -164,6 +165,7 @@ const updateProgressBar = () => {
         playNextMusic()
     }
 };
+
 // 页面加载完成后对Audio绑定播放时事件
 onMounted(() => {
     musicAudio.value!.addEventListener('timeupdate', updateProgressBar)
@@ -225,6 +227,15 @@ function playNextMusic() {
     }
     const nextMusicIndex = curMusicIndex === musicList.value.length - 1 ? musicList.value.length - 1 : curMusicIndex + 1
     changeMusic(musicList.value[nextMusicIndex])
+}
+
+// 更新音乐播放进度
+function updataMusicPlayTime(e: MouseEvent) {
+    const target = e.target as HTMLDivElement;
+    const rect = target.getBoundingClientRect();
+    const x = e.pageX - rect.left;
+
+    musicAudio.value!.currentTime = (currentPlayMusic.value!.duration / 1000) * (x / rect.width);
 }
 
 </script>
@@ -581,6 +592,14 @@ function playNextMusic() {
                         left: -100%;
                         background-color: #c74150;
                         border-radius: 10px;
+                    }
+
+                    .scheduleEntity {
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        width: 100%;
+                        height: 100%;
                     }
                 }
             }
