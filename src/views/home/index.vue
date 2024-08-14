@@ -31,7 +31,7 @@
                     <div v-if="musicList.length" class="musicListBodyer" v-infinite-scroll="loadMusicList"
                         :infinite-scroll-immediate="false" infinite-scroll-distance="1">
                         <div class="musicItem Music" v-for="(item, index) in musicList" :key="item.id"
-                            @click="selectMusic(item)">
+                            @click="changeMusic(item)">
                             <div class="index">{{ index + 1 }}</div>
                             <div class="title">
                                 <img :src="item.album.picUrl" class="musicImage">
@@ -178,7 +178,7 @@ const currentPlayMusic = ref<IMusic>()
 const musicCurrentTime = ref<number>(0)
 
 // 选中音乐
-function selectMusic(music: IMusic) {
+function changeMusic(music: IMusic) {
     currentPlayMusic.value = music
     musicCurrentTime.value = 0
     playMusic()
@@ -206,12 +206,22 @@ function pauseMusic() {
 
 // 上一曲
 function playPreMusic() {
-
+    const curMusicIndex = musicList.value.findIndex(item => item.id === currentPlayMusic.value?.id)
+    if (curMusicIndex === -1) {
+        return
+    }
+    const preMusicIndex = curMusicIndex === 0 ? 0 : curMusicIndex - 1
+    changeMusic(musicList.value[preMusicIndex])
 }
 
 // 下一曲
 function playNextMusic() {
-
+    const curMusicIndex = musicList.value.findIndex(item => item.id === currentPlayMusic.value?.id)
+    if (curMusicIndex === -1) {
+        return
+    }
+    const nextMusicIndex = curMusicIndex === musicList.value.length - 1 ? musicList.value.length - 1 : curMusicIndex + 1
+    changeMusic(musicList.value[nextMusicIndex])
 }
 
 </script>
