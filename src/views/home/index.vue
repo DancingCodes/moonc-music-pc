@@ -256,6 +256,7 @@ function updataMusicPlayTime(e: MouseEvent) {
 <style scoped lang="scss">
 .home {
     height: 100vh;
+    background-color: #000;
     display: flex;
     flex-direction: column;
 
