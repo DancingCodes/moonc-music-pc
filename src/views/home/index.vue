@@ -30,8 +30,8 @@
                     </div>
                     <div v-if="musicList.length" class="musicListBodyer" v-infinite-scroll="loadMusicList"
                         :infinite-scroll-immediate="false" infinite-scroll-distance="1">
-                        <div class="musicItem Music" v-for="(item, index) in musicList" :key="item.id"
-                            @click="changeMusic(item)">
+                        <div class="musicItem Music" :class="{ currentItem: currentPlayMusic?.id === item.id }"
+                            v-for="(item, index) in musicList" :key="item.id" @click="changeMusic(item)">
                             <div class="index">{{ index + 1 }}</div>
                             <div class="title">
                                 <img :src="item.album.picUrl" class="musicImage">
@@ -425,6 +425,10 @@ function playNextMusic() {
                     }
 
                     .musicItem:hover {
+                        background-color: rgba(#aca9a7, 0.3);
+                    }
+
+                    .currentItem {
                         background-color: rgba(#aca9a7, 0.3);
                     }
 
