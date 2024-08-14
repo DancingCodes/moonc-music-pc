@@ -94,8 +94,9 @@
 
                 </div>
                 <div class="audioBox">
-                    <audio style="width: 0;height: 0;" ref="musicAudio" :src="currentPlayMusic?.url" controls></audio>
+                    <audio style="width: 0;height: 0;" ref="musicAudio" preload="auto" :src="currentPlayMusic?.url" controls></audio>
                     <div class="audioSchedule">
+                        <div ref="loadBar" class="loadBar"></div>
                         <div ref="progressBar" class="progressBar"></div>
                         <div class="scheduleEntity" @click="updataMusicPlayTime"></div>
                     </div>
@@ -165,14 +166,27 @@ const updateProgressBar = () => {
         playNextMusic()
     }
 };
+// 缓冲进度条
+const loadBar = ref<HTMLDivElement>()
+// Audio的缓冲进度条
+function updateLoadProgress() {
+    if (musicAudio.value!.buffered.length) {
+        const bufferedEnd = musicAudio.value!.buffered.end(musicAudio.value!.buffered.length - 1);
+        const duration = musicAudio.value!.duration;
+        const bufferedPercent = (bufferedEnd / duration) * 100;
+        loadBar.value!.style.width = `${bufferedPercent}%`
+    }
+}
 
-// 页面加载完成后对Audio绑定播放时事件
+// 页面加载完成后对Audio绑定事件
 onMounted(() => {
     musicAudio.value!.addEventListener('timeupdate', updateProgressBar)
+    musicAudio.value!.addEventListener('progress', updateLoadProgress);
 })
-// 页面卸载完成后对Audio解绑播放时事件
+// 页面卸载完成后对Audio解绑事件
 onUnmounted(() => {
     musicAudio.value!.removeEventListener('timeupdate', updateProgressBar);
+    musicAudio.value!.removeEventListener('progress', updateLoadProgress);
 })
 
 // 播放状态
@@ -578,18 +592,28 @@ function updataMusicPlayTime(e: MouseEvent) {
                 .audioSchedule {
                     width: 460px;
                     height: 10px;
-                    background-color: #42424c;
+                    background-color: #000;
                     border-radius: 10px;
                     position: relative;
                     overflow: hidden;
 
-                    .progressBar {
+                    .loadBar {
                         position: absolute;
                         left: 0;
                         top: 0;
+                        width: 0%;
+                        height: 100%;
+                        background-color: #42424c;
+                        border-radius: 10px;
+                        transition: width 1s;
+                    }
+
+                    .progressBar {
+                        position: absolute;
+                        top: 0;
+                        left: -100%;
                         width: 100%;
                         height: 100%;
-                        left: -100%;
                         background-color: #c74150;
                         border-radius: 10px;
                     }
