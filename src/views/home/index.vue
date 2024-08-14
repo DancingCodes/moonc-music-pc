@@ -62,7 +62,7 @@
             </div>
             <div class="musicControl">
                 <div class="controlBtnBox">
-                    <div class="preMusic MusicBtn">
+                    <div class="preMusic MusicBtn" @click="playPreMusic">
                         <svg viewBox="0 0 1024 1024" width="1em" height="1em">
                             <path fill="currentColor"
                                 d="M885.76 911.36h35.84c20.48 0 35.84-15.36 35.84-35.84V128c0-20.48-15.36-35.84-35.84-35.84h-35.84c-20.48 0-35.84 15.36-35.84 35.84v752.64c5.12 15.36 20.48 30.72 35.84 30.72zM76.8 880.64c20.48 30.72 61.44 40.96 92.16 20.48l552.96-332.8c10.24-5.12 15.36-15.36 20.48-20.48 20.48-30.72 10.24-71.68-20.48-92.16L168.96 122.88c-10.24-10.24-20.48-10.24-30.72-10.24-35.84 0-66.56 30.72-66.56 66.56v665.6c-5.12 10.24 0 25.6 5.12 35.84z">
@@ -84,8 +84,7 @@
                         </svg>
                     </div>
 
-
-                    <div class="nextMusic MusicBtn">
+                    <div class="nextMusic MusicBtn" @click="playNextMusic">
                         <svg viewBox="0 0 1024 1024" width="1em" height="1em">
                             <path fill="currentColor"
                                 d="M885.76 911.36h35.84c20.48 0 35.84-15.36 35.84-35.84V128c0-20.48-15.36-35.84-35.84-35.84h-35.84c-20.48 0-35.84 15.36-35.84 35.84v752.64c5.12 15.36 20.48 30.72 35.84 30.72zM76.8 880.64c20.48 30.72 61.44 40.96 92.16 20.48l552.96-332.8c10.24-5.12 15.36-15.36 20.48-20.48 20.48-30.72 10.24-71.68-20.48-92.16L168.96 122.88c-10.24-10.24-20.48-10.24-30.72-10.24-35.84 0-66.56 30.72-66.56 66.56v665.6c-5.12 10.24 0 25.6 5.12 35.84z">
@@ -203,6 +202,16 @@ function pauseMusic() {
     }
     musicAudio.value!.pause()
     musicCurrentTime.value = musicAudio.value!.currentTime
+}
+
+// 上一曲
+function playPreMusic() {
+
+}
+
+// 下一曲
+function playNextMusic() {
+
 }
 
 </script>
