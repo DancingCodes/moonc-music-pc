@@ -52,12 +52,12 @@
                 </div>
             </div>
         </div>
-        <div class="footer" v-show="currentPlayMusic">
+        <div class="footer" v-if="currentPlayMusic">
             <div class="musicSide Side">
-                <img :src="currentPlayMusic?.album.picUrl" class="musicImage">
+                <img :src="currentPlayMusic.album.picUrl" class="musicImage">
                 <div class="musicInfo">
-                    <div class="musicName">{{ currentPlayMusic?.name }}</div>
-                    <div class="musicAuthor">{{ currentPlayMusic?.author.map(item => item.name).join('/') }}</div>
+                    <div class="musicName">{{ currentPlayMusic.name }}</div>
+                    <div class="musicAuthor">{{ currentPlayMusic.author.map(item => item.name).join('/') }}</div>
                 </div>
             </div>
             <div class="musicControl">
@@ -94,7 +94,8 @@
 
                 </div>
                 <div class="audioBox">
-                    <audio style="width: 0;height: 0;" ref="musicAudio" preload="auto" :src="currentPlayMusic?.url" controls></audio>
+                    <audio style="width: 0;height: 0;" ref="musicAudio" preload="auto" :src="currentPlayMusic.url"
+                        controls></audio>
                     <div class="audioSchedule">
                         <div ref="loadBar" class="loadBar"></div>
                         <div ref="progressBar" class="progressBar"></div>
@@ -155,8 +156,18 @@ function loadMusicList() {
 
 // 播放器
 const musicAudio = ref<HTMLAudioElement>()
+watch(musicAudio, newVal => {
+    if (newVal) {
+        musicAudio.value!.addEventListener('timeupdate', updateProgressBar)
+        musicAudio.value!.addEventListener('progress', updateLoadProgress);
+    }
+})
+
+
 // 进度条
 const progressBar = ref<HTMLDivElement>()
+// 缓冲进度条
+const loadBar = ref<HTMLDivElement>()
 // Audio播放时设置进度条
 const updateProgressBar = () => {
     const percentage = (musicAudio.value!.currentTime / musicAudio.value!.duration) * 100;
@@ -166,8 +177,6 @@ const updateProgressBar = () => {
         playNextMusic()
     }
 };
-// 缓冲进度条
-const loadBar = ref<HTMLDivElement>()
 // Audio的缓冲进度条
 function updateLoadProgress() {
     if (musicAudio.value!.buffered.length) {
@@ -178,16 +187,11 @@ function updateLoadProgress() {
     }
 }
 
-// 页面加载完成后对Audio绑定事件
-onMounted(() => {
-    musicAudio.value!.addEventListener('timeupdate', updateProgressBar)
-    musicAudio.value!.addEventListener('progress', updateLoadProgress);
-})
-// 页面卸载完成后对Audio解绑事件
-onUnmounted(() => {
-    musicAudio.value!.removeEventListener('timeupdate', updateProgressBar);
-    musicAudio.value!.removeEventListener('progress', updateLoadProgress);
-})
+// // 页面卸载完成后对Audio解绑事件
+// onUnmounted(() => {
+//     musicAudio.value!.removeEventListener('timeupdate', updateProgressBar);
+//     musicAudio.value!.removeEventListener('progress', updateLoadProgress);
+// })
 
 // 播放状态
 const playState = ref<boolean>(false)
