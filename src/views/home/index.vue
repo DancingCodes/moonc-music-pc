@@ -163,7 +163,6 @@ watch(musicAudio, newVal => {
     }
 })
 
-
 // 进度条
 const progressBar = ref<HTMLDivElement>()
 // 缓冲进度条
@@ -186,12 +185,6 @@ function updateLoadProgress() {
         loadBar.value!.style.width = `${bufferedPercent}%`
     }
 }
-
-// // 页面卸载完成后对Audio解绑事件
-// onUnmounted(() => {
-//     musicAudio.value!.removeEventListener('timeupdate', updateProgressBar);
-//     musicAudio.value!.removeEventListener('progress', updateLoadProgress);
-// })
 
 // 播放状态
 const playState = ref<boolean>(false)
