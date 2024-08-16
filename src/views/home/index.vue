@@ -53,7 +53,7 @@
             </div>
         </div>
         <div class="footer" v-if="currentPlayMusic">
-            <div class="musicSide Side">
+            <div class="musicSide Side" @click="showMusicDetails">
                 <img :src="currentPlayMusic.album.picUrl" class="musicImage">
                 <div class="musicInfo">
                     <div class="musicName">{{ currentPlayMusic.name }}</div>
@@ -105,6 +105,14 @@
             </div>
             <div class="Side"></div>
         </div>
+
+        <div class="popup" v-if="currentMusicLyricList.length">
+            <div class="lyricList" ref="lyricList">
+                <div class="lyricItem" v-for="item in currentMusicLyricList">
+                    {{ item.text }}
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -116,7 +124,7 @@ import { IMusic } from '@/types/music';
 const searchParams = reactive<ISearchMusicParams>({
     name: '',
     pageNo: 1,
-    pageSize: 10
+    pageSize: 20
 })
 // 音乐列表
 const musicList = ref<IMusic[]>([])
@@ -167,10 +175,41 @@ watch(musicAudio, newVal => {
 const progressBar = ref<HTMLDivElement>()
 // 缓冲进度条
 const loadBar = ref<HTMLDivElement>()
-// Audio播放时设置进度条
+// 歌词列表
+const lyricList = ref<HTMLDivElement>()
+// Audio播放时设置进度条以及设置歌词位置
 const updateProgressBar = () => {
+    // 设置进度条
     const percentage = (musicAudio.value!.currentTime / musicAudio.value!.duration) * 100;
     progressBar.value!.style.left = `-${100 - percentage}%`
+
+
+    // 设置歌词位置
+    if (musicDetailsShow.value) {
+        // 获取歌词列表中大于当前时间并小于下次时间的歌词
+        const currentLyricIndex = currentMusicLyricList.value.findIndex((item, index) => {
+            const currentTime = musicAudio.value!.currentTime
+            const nextItem = currentMusicLyricList.value[index + 1];
+            return item.time <= currentTime && (nextItem && nextItem.time > currentTime);
+        })
+        if (currentLyricIndex === -1) {
+            return
+        }
+        // 当前歌词Dom
+        const currentLyric = lyricList.value!.children[currentLyricIndex] as HTMLDivElement
+        // 设置当前歌词样式
+        Array.from(lyricList.value!.children).forEach(item => {
+            item.classList.remove('cuurentLyric')
+        })
+        currentLyric.classList.add('cuurentLyric')
+        // 让当前歌词滚动至中间
+        currentLyric.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
+    }
+
+
 
     if (percentage === 100) {
         playNextMusic()
@@ -190,6 +229,8 @@ function updateLoadProgress() {
 const playState = ref<boolean>(false)
 // 当前播放音乐
 const currentPlayMusic = ref<IMusic>()
+// 当前音乐歌词列表
+const currentMusicLyricList = ref<{ time: number, text: string }[]>([])
 // 音乐当前播放的时长
 const musicCurrentTime = ref<number>(0)
 
@@ -249,6 +290,22 @@ function updataMusicPlayTime(e: MouseEvent) {
     musicAudio.value!.currentTime = (currentPlayMusic.value!.duration / 1000) * (x / rect.width);
 }
 
+// 展示音乐详情
+const musicDetailsShow = ref(false)
+function showMusicDetails() {
+    musicDetailsShow.value = true
+    setCurrentMusicLyricList()
+}
+// 设置当前音乐歌词
+function setCurrentMusicLyricList() {
+    currentMusicLyricList.value = currentPlayMusic.value!.lyric.trim().split('\n').map(item => {
+        const [time, text] = item.split(']');
+        const [minutes, seconds] = time.substring(1).split(':').map(parseFloat);
+        return { time: minutes * 60 + seconds, text: text.trim() };
+    });
+}
+
+
 </script>
 <style scoped lang="scss">
 .home {
@@ -256,6 +313,7 @@ function updataMusicPlayTime(e: MouseEvent) {
     background-color: #000;
     display: flex;
     flex-direction: column;
+    position: relative;
 
     .bodyer {
         flex: 1;
@@ -635,6 +693,27 @@ function updataMusicPlayTime(e: MouseEvent) {
 
         to {
             opacity: 1;
+        }
+    }
+
+    .popup {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(#aca9a7, 0.3);
+
+        .lyricList {
+            height: 300px;
+            overflow-y: scroll;
+            transition: all 1s;
+            font-size: 30px;
+
+            .cuurentLyric {
+                color: #fff;
+                font-size: 36px;
+            }
         }
     }
 
