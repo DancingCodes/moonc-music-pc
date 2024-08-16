@@ -702,17 +702,23 @@ function setCurrentMusicLyricList() {
         top: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(#aca9a7, 0.3);
+        background: linear-gradient(to bottom, #715d3d, #13131a);
+
 
         .lyricList {
-            height: 300px;
-            overflow-y: scroll;
-            transition: all 1s;
-            font-size: 30px;
+            height: 100vh;
+            overflow: hidden;
+
+            .lyricItem {
+                transition: all 0.7s;
+                font-size: 30px;
+                text-align: center;
+                padding: 8px 0;
+            }
 
             .cuurentLyric {
                 color: #fff;
-                font-size: 36px;
+                font-weight: bold;
             }
         }
     }
