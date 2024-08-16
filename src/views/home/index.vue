@@ -106,7 +106,7 @@
             <div class="Side"></div>
         </div>
 
-        <div class="popup" v-if="currentMusicLyricList.length">
+        <div class="popup" v-show="musicDetailsShow" @click="musicDetailsShow = false">
             <div class="lyricList" ref="lyricList">
                 <div class="lyricItem" v-for="item in currentMusicLyricList">
                     {{ item.text }}
@@ -171,6 +171,8 @@ watch(musicAudio, newVal => {
     }
 })
 
+
+
 // 进度条
 const progressBar = ref<HTMLDivElement>()
 // 缓冲进度条
@@ -190,7 +192,7 @@ const updateProgressBar = () => {
         const currentLyricIndex = currentMusicLyricList.value.findIndex((item, index) => {
             const currentTime = musicAudio.value!.currentTime
             const nextItem = currentMusicLyricList.value[index + 1];
-            return item.time <= currentTime && (nextItem && nextItem.time > currentTime);
+            return item.time <= currentTime && (!nextItem || nextItem.time > currentTime);
         })
         if (currentLyricIndex === -1) {
             return
@@ -229,6 +231,9 @@ function updateLoadProgress() {
 const playState = ref<boolean>(false)
 // 当前播放音乐
 const currentPlayMusic = ref<IMusic>()
+watch(currentPlayMusic, () => {
+    setCurrentMusicLyricList()
+})
 // 当前音乐歌词列表
 const currentMusicLyricList = ref<{ time: number, text: string }[]>([])
 // 音乐当前播放的时长
@@ -294,7 +299,6 @@ function updataMusicPlayTime(e: MouseEvent) {
 const musicDetailsShow = ref(false)
 function showMusicDetails() {
     musicDetailsShow.value = true
-    setCurrentMusicLyricList()
 }
 // 设置当前音乐歌词
 function setCurrentMusicLyricList() {
@@ -703,6 +707,7 @@ function setCurrentMusicLyricList() {
         width: 100%;
         height: 100%;
         background: linear-gradient(to bottom, #715d3d, #13131a);
+        animation: showByOpacity 0.7s ease 0s forwards;
 
 
         .lyricList {
