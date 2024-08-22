@@ -185,7 +185,6 @@ const updateProgressBar = () => {
     const percentage = (musicAudio.value!.currentTime / musicAudio.value!.duration) * 100;
     progressBar.value!.style.left = `-${100 - percentage}%`
 
-
     // 设置歌词位置
     if (musicDetailsShow.value) {
         // 获取歌词列表中大于当前时间并小于下次时间的歌词
@@ -211,8 +210,6 @@ const updateProgressBar = () => {
         });
     }
 
-
-
     if (percentage === 100) {
         playNextMusic()
     }
@@ -231,9 +228,6 @@ function updateLoadProgress() {
 const playState = ref<boolean>(false)
 // 当前播放音乐
 const currentPlayMusic = ref<IMusic>()
-watch(currentPlayMusic, () => {
-    setCurrentMusicLyricList()
-})
 // 当前音乐歌词列表
 const currentMusicLyricList = ref<{ time: number, text: string }[]>([])
 // 音乐当前播放的时长
@@ -244,6 +238,7 @@ function changeMusic(music: IMusic) {
     currentPlayMusic.value = music
     musicCurrentTime.value = 0
     playMusic()
+    setCurrentMusicLyricList()
 }
 
 // 播放音乐
