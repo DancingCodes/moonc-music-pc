@@ -107,6 +107,9 @@
         </div>
 
         <div class="popup" v-show="musicDetailsShow" @click="musicDetailsShow = false">
+            <div class="albumInfo">
+                <img class="albumImg" :src="currentPlayMusic?.album.picUrl">
+            </div>
             <div class="lyricList" ref="lyricList">
                 <div class="lyricItem" v-for="item in currentMusicLyricList">
                     {{ item.text }}
@@ -236,9 +239,6 @@ const musicCurrentTime = ref<number>(0)
 // 选中音乐
 function changeMusic(music: IMusic) {
     currentPlayMusic.value = music
-
-    console.log(currentPlayMusic.value);
-    
     musicCurrentTime.value = 0
     playMusic()
     setCurrentMusicLyricList()
@@ -706,6 +706,12 @@ function setCurrentMusicLyricList() {
         height: 100%;
         background: linear-gradient(to bottom, #715d3d, #13131a);
         animation: showByOpacity 0.7s ease 0s forwards;
+        display: flex;
+        align-items: center;
+
+        .albumInfo {
+            .albumImg {}
+        }
 
 
         .lyricList {
