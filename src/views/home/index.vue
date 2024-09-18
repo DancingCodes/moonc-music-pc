@@ -108,8 +108,8 @@
             <div class="Side"></div>
         </div>
 
-        <div class="popup" v-show="musicDetailsShow" @click="musicDetailsShow = false">
-            <div class="albumInfo">
+        <div class="popup" v-show="musicDetailsShow">
+            <div class="albumInfo" @click="musicDetailsShow = false">
                 <img class="albumImg" :src="currentPlayMusic?.album.picUrl">
             </div>
             <div class="lyricList" ref="lyricList">
