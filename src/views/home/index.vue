@@ -236,6 +236,9 @@ const musicCurrentTime = ref<number>(0)
 // 选中音乐
 function changeMusic(music: IMusic) {
     currentPlayMusic.value = music
+
+    console.log(currentPlayMusic.value);
+    
     musicCurrentTime.value = 0
     playMusic()
     setCurrentMusicLyricList()
