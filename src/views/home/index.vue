@@ -53,11 +53,13 @@
             </div>
         </div>
         <div class="footer" v-if="currentPlayMusic">
-            <div class="musicSide Side" @click="showMusicDetails">
-                <img :src="currentPlayMusic.album.picUrl" class="musicImage">
-                <div class="musicInfo">
-                    <div class="musicName">{{ currentPlayMusic.name }}</div>
-                    <div class="musicAuthor">{{ currentPlayMusic.author.map(item => item.name).join('/') }}</div>
+            <div class="Side">
+                <div class="musicSide" @click="showMusicDetails">
+                    <img :src="currentPlayMusic.album.picUrl" class="musicImage">
+                    <div class="musicInfo">
+                        <div class="musicName">{{ currentPlayMusic.name }}</div>
+                        <div class="musicAuthor">{{ currentPlayMusic.author.map(item => item.name).join('/') }}</div>
+                    </div>
                 </div>
             </div>
             <div class="musicControl">
@@ -575,6 +577,7 @@ function setCurrentMusicLyricList() {
 
         .Side {
             flex: 1;
+            display: flex;
         }
 
         .musicSide {
@@ -708,14 +711,17 @@ function setCurrentMusicLyricList() {
         animation: showByOpacity 0.7s ease 0s forwards;
         display: flex;
         align-items: center;
+        justify-content: center;
+        column-gap: 280px;
 
         .albumInfo {
-            .albumImg {}
+            .albumImg {
+                width: 300px;
+            }
         }
 
-
         .lyricList {
-            height: 100vh;
+            height: 80%;
             overflow: hidden;
 
             .lyricItem {
