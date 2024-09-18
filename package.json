@@ -13,20 +13,20 @@
     "element-plus": "^2.7.8",
     "normalize.css": "^8.0.1",
     "nprogress": "^0.2.0",
-    "vue": "^3.4.31"
+    "vue": "^3.4.37"
   },
   "devDependencies": {
     "@iconify-json/ep": "^1.1.16",
     "@types/node": "^22.1.0",
     "@types/nprogress": "^0.2.3",
-    "@vitejs/plugin-vue": "^5.0.5",
+    "@vitejs/plugin-vue": "^5.1.2",
     "postcss-px-to-viewport-8-plugin": "^1.2.5",
     "sass": "^1.77.8",
-    "typescript": "^5.2.2",
+    "typescript": "^5.5.3",
     "unplugin-auto-import": "^0.18.2",
     "unplugin-icons": "^0.19.1",
     "unplugin-vue-components": "^0.27.3",
-    "vite": "^5.3.4",
-    "vue-tsc": "^2.0.24"
+    "vite": "^5.4.1",
+    "vue-tsc": "^2.0.29"
   }
 }
