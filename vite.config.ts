@@ -17,8 +17,8 @@ export default defineConfig({
     host: '0.0.0.0',
     proxy: {
       '/dev-api': {
-        // target: 'http://127.0.0.1:3003',
-        target: 'https://musicapi.moonc.love',
+        target: 'http://127.0.0.1:3003',
+        // target: 'https://musicapi.moonc.love',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/dev-api/, '')
       },
